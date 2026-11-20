@@ -1,0 +1,769 @@
+.hero-content .search-bar {
+    display: flex;
+    width: 100%;
+    max-width: 420px;          /* lambai yahan se badlo */
+    margin-bottom: 10px;
+}
+
+.hero-content .search-bar input {
+    flex: 1;
+    padding: 12px 18px;        /* height yahan se badlo */
+    font-size: 16px;
+    border: none;
+    outline: none;
+    border-radius: 30px 0 0 30px;
+    background: rgba(255, 255, 255, 0.9);
+    color: #263b38;
+}
+
+.hero-content .search-bar button {
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    border-radius: 0 30px 30px 0;
+    background: #bd9460;
+    color: white;
+}
+
+#errorMsg {
+    color: #ffb4a8;
+    font-size: 14px;
+    min-height: 18px;
+    margin-bottom: 10px;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-12px); }
+}
+
+/* Navbar aur search bar load animation */
+.navbar {
+    animation: slideDown 0.7s ease backwards;
+}
+
+.hero-content .search-bar {
+    animation: fadeUp 0.7s ease backwards;
+}
+
+/* Hero text (JS isse trigger karta hai) */
+.anim-in {
+    animation: fadeUp 0.7s ease backwards;
+}
+
+/* Floating weather icon */
+.big-icon {
+    display: inline-block;
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+/* Search bar effects */
+.hero-content .search-bar input {
+    transition: box-shadow 0.3s ease;
+}
+
+.hero-content .search-bar input:focus {
+    box-shadow: 0 0 0 3px rgba(189, 148, 96, 0.55);
+}
+
+.hero-content .search-bar button {
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.hero-content .search-bar button:hover {
+    transform: scale(1.06);
+}
+
+.hero-content .search-bar button:active {
+    transform: scale(0.95);
+}
+
+/* Cards: load animation + hover */
+.stat-card,
+.day-card,
+.city-card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    animation: fadeUp 0.6s ease backwards;
+}
+
+.stat-card:hover,
+.day-card:hover,
+.city-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* Cards ek-ek karke aayenge */
+.stat-card:nth-child(1), .day-card:nth-child(1), .city-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2), .day-card:nth-child(2), .city-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3), .day-card:nth-child(3), .city-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4), .day-card:nth-child(4), .city-card:nth-child(4) { animation-delay: 0.4s; }
+.day-card:nth-child(5) { animation-delay: 0.5s; }
+
+/* Icons hover */
+.day-icon,
+.city-icon {
+    display: inline-block;
+    transition: transform 0.4s ease;
+}
+
+.day-card:hover .day-icon,
+.city-card:hover .city-icon {
+    transform: scale(1.3) rotate(8deg);
+}
+
+/* Scroll reveal */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: none;
+}
+
+/* Jinko animation pasand nahi unke liye */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+    .reveal {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: inherit;          /* hero ki hi photo copy karta hai */
+    animation: slowZoom 18s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.12); }
+}
+
+/* =================================
+   SKYNOW - COMPLETE STYLE.CSS
+   (purani style.css ko is poori file se replace karo)
+================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+:root {
+    --bg-dark: #0b1f24;
+    --bg-mid: #10353b;
+    --gold: #e0b87a;
+    --gold-dark: #bd9460;
+    --text: #ffffff;
+    --text-soft: rgba(255, 255, 255, 0.78);
+    --glass: rgba(255, 255, 255, 0.10);
+    --glass-border: rgba(255, 255, 255, 0.22);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: "Poppins", "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =================================
+   ANIMATIONS
+================================= */
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-14px); }
+}
+
+@keyframes slowZoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.12); }
+}
+
+
+/* =================================
+   NAVBAR
+================================= */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 8%;
+
+    background: rgba(11, 31, 36, 0.55);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--glass-border);
+
+    animation: slideDown 0.7s ease backwards;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.logo span {
+    color: var(--gold);
+}
+
+.navbar nav {
+    display: flex;
+    gap: 32px;
+}
+
+.navbar nav a {
+    position: relative;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-soft);
+    transition: color 0.3s ease;
+}
+
+.navbar nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 0;
+    height: 2px;
+    background: var(--gold);
+    transition: width 0.3s ease;
+}
+
+.navbar nav a:hover {
+    color: var(--text);
+}
+
+.navbar nav a:hover::after {
+    width: 100%;
+}
+
+
+/* =================================
+   HERO
+================================= */
+
+.hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+
+    min-height: calc(100vh - 68px);
+    padding: 70px 8% 50px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 50px;
+}
+
+/* Background photo + dark overlay (slow zoom animation) */
+.hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+
+    background:
+        linear-gradient(120deg, rgba(8, 28, 33, 0.82), rgba(8, 28, 33, 0.35)),
+        url("https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=1800&q=80")
+        center / cover no-repeat,
+        linear-gradient(135deg, #0f3a42, #0b1f24);
+
+    animation: slowZoom 20s ease-in-out infinite alternate;
+}
+
+.hero-content {
+    max-width: 640px;
+}
+
+
+/* ---------- Search bar ---------- */
+
+.search-bar {
+    display: flex;
+    width: 100%;
+    max-width: 440px;
+    margin-bottom: 10px;
+
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    padding: 5px;
+
+    animation: fadeUp 0.7s ease backwards;
+    transition: box-shadow 0.3s ease;
+}
+
+.search-bar:focus-within {
+    box-shadow: 0 0 0 3px rgba(224, 184, 122, 0.45);
+}
+
+.search-bar input {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 20px;
+
+    background: transparent;
+    border: none;
+    outline: none;
+
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.search-bar input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.search-bar button {
+    padding: 12px 28px;
+
+    background: var(--gold-dark);
+    color: #fff;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+
+    transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.search-bar button:hover {
+    background: var(--gold);
+    transform: scale(1.05);
+}
+
+.search-bar button:active {
+    transform: scale(0.95);
+}
+
+#errorMsg {
+    min-height: 22px;
+    margin-bottom: 18px;
+    padding-left: 12px;
+    font-size: 14px;
+    color: #ffb4a8;
+}
+
+
+/* ---------- Hero text ---------- */
+
+.small-heading {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    color: var(--gold);
+    margin-bottom: 8px;
+}
+
+.hero-content h1 {
+    font-size: clamp(42px, 7vw, 82px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 12px;
+}
+
+.date {
+    font-size: 18px;
+    color: var(--text-soft);
+    margin-bottom: 30px;
+}
+
+.temp-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.big-icon {
+    display: inline-block;
+    font-size: clamp(56px, 8vw, 90px);
+    animation: floatIcon 3s ease-in-out infinite;
+}
+
+.big-temp {
+    font-size: clamp(70px, 11vw, 120px);
+    font-weight: 300;
+    line-height: 1;
+}
+
+.condition {
+    margin-top: 10px;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--gold);
+}
+
+/* JS hero text re-animation */
+.anim-in {
+    animation: fadeUp 0.7s ease backwards;
+}
+
+
+/* ---------- Stats ---------- */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 22px 24px;
+
+    background: var(--glass);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    animation: fadeUp 0.6s ease backwards;
+}
+
+.stat-card span {
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-soft);
+}
+
+.stat-card strong {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+}
+
+.stat-card:nth-child(1) { animation-delay: 0.1s; }
+.stat-card:nth-child(2) { animation-delay: 0.2s; }
+.stat-card:nth-child(3) { animation-delay: 0.3s; }
+.stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+
+/* =================================
+   SECTION HEADINGS (shared)
+================================= */
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-heading h2 {
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 700;
+    margin: 6px 0;
+}
+
+.section-heading p:last-child {
+    color: var(--text-soft);
+}
+
+
+/* =================================
+   FORECAST
+================================= */
+
+.forecast {
+    padding: 100px 8%;
+    background: linear-gradient(180deg, var(--bg-dark), var(--bg-mid));
+}
+
+.forecast-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+.day-card,
+.city-card {
+    text-align: center;
+    padding: 30px 18px;
+
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 22px;
+
+    transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+    animation: fadeUp 0.6s ease backwards;
+}
+
+.day-card:hover,
+.city-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 18px 35px rgba(0, 0, 0, 0.35);
+}
+
+.day-card:nth-child(1) { animation-delay: 0.1s; }
+.day-card:nth-child(2) { animation-delay: 0.2s; }
+.day-card:nth-child(3) { animation-delay: 0.3s; }
+.day-card:nth-child(4) { animation-delay: 0.4s; }
+.day-card:nth-child(5) { animation-delay: 0.5s; }
+
+.day-card h3,
+.city-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.day-icon,
+.city-icon {
+    display: inline-block;
+    margin: 14px 0 6px;
+    font-size: 46px;
+    transition: transform 0.4s ease;
+}
+
+.day-card:hover .day-icon,
+.city-card:hover .city-icon {
+    transform: scale(1.25) rotate(8deg);
+}
+
+.day-card p,
+.city-card p {
+    font-size: 14px;
+    color: var(--text-soft);
+}
+
+.day-card h4 {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gold);
+}
+
+
+/* =================================
+   CITIES
+================================= */
+
+.cities {
+    padding: 100px 8%;
+    background: linear-gradient(180deg, var(--bg-mid), var(--bg-dark));
+}
+
+.city-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.city-card h4 {
+    margin-top: 8px;
+    font-size: 30px;
+    font-weight: 600;
+    color: var(--gold);
+}
+
+.city-card:nth-child(1) { animation-delay: 0.1s; }
+.city-card:nth-child(2) { animation-delay: 0.2s; }
+.city-card:nth-child(3) { animation-delay: 0.3s; }
+.city-card:nth-child(4) { animation-delay: 0.4s; }
+
+
+/* =================================
+   ABOUT
+================================= */
+
+.about {
+    padding: 100px 8%;
+    background: var(--bg-dark);
+}
+
+.about-content {
+    max-width: 760px;
+    margin: auto;
+    text-align: center;
+    padding: 55px 40px;
+
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 26px;
+}
+
+.about-content h2 {
+    font-size: clamp(30px, 4vw, 40px);
+    margin: 6px 0 16px;
+}
+
+.about-content p:last-child {
+    color: var(--text-soft);
+    font-size: 17px;
+}
+
+
+/* =================================
+   FOOTER
+================================= */
+
+.footer {
+    padding: 50px 8% 24px;
+    text-align: center;
+    background: #071519;
+    border-top: 1px solid var(--glass-border);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin: 20px 0;
+}
+
+.footer-links a {
+    color: var(--text-soft);
+    transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+    color: var(--gold);
+}
+
+.copyright {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    padding-top: 18px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/* =================================
+   SCROLL REVEAL (JS add karta hai)
+================================= */
+
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: none;
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 1000px) {
+    .stats,
+    .city-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .forecast-container {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 14px 5%;
+    }
+
+    .navbar nav {
+        gap: 18px;
+    }
+
+    .hero {
+        padding: 50px 5% 40px;
+    }
+
+    .forecast,
+    .cities,
+    .about {
+        padding: 70px 5%;
+    }
+
+    .forecast-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-card strong {
+        font-size: 22px;
+    }
+}
