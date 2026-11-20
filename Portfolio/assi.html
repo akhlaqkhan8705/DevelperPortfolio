@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyNow | Weather</title>
+    <link rel="stylesheet" href="assi.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <h2 class="logo">Sky<span>Now.</span></h2>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#forecast">Forecast</a>
+            <a href="#cities">Cities</a>
+            <a href="#about">About</a>
+        </nav>
+    </header>
+
+    <section class="hero" id="home">
+
+        <div class="hero-content">
+
+            <!-- SEARCH BAR (ab kisi bhi city ke liye kaam karega) -->
+            <form class="search-bar" id="searchForm">
+                <input type="text" id="cityInput" placeholder="Search any city, e.g. Mumbai" autocomplete="off" required aria-label="Search city">
+                <button type="submit">Search</button>
+            </form>
+            <p id="errorMsg"></p>
+
+            <p class="small-heading">TODAY'S WEATHER</p>
+            <h1 id="cityName">New Delhi, India</h1>
+            <p class="date" id="dateText">Friday, 13 November</p>
+
+            <div class="temp-row">
+                <span class="big-icon" id="bigIcon">&#9728;&#65039;</span>
+                <span class="big-temp" id="bigTemp">28&deg;</span>
+            </div>
+
+            <p class="condition" id="condition">Sunny and clear</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+
+                <script>
+    // Weather code -> text + icon
+    const WEATHER = {
+        0:  ["Clear sky", "☀️"],
+        1:  ["Mainly clear", "🌤️"],
+        2:  ["Partly cloudy", "⛅"],
+        3:  ["Overcast", "☁️"],
+        45: ["Fog", "🌫️"],
+        48: ["Fog", "🌫️"],
+        51: ["Light drizzle", "🌦️"],
+        53: ["Drizzle", "🌦️"],
+        55: ["Heavy drizzle", "🌧️"],
+        56: ["Freezing drizzle", "🌧️"],
+        57: ["Freezing drizzle", "🌧️"],
+        61: ["Light rain", "🌧️"],
+        63: ["Rain", "🌧️"],
+        65: ["Heavy rain", "🌧️"],
+        66: ["Freezing rain", "🌧️"],
+        67: ["Freezing rain", "🌧️"],
+        71: ["Light snow", "🌨️"],
+        73: ["Snow", "🌨️"],
+        75: ["Heavy snow", "❄️"],
+        77: ["Snow grains", "❄️"],
+        80: ["Rain showers", "🌦️"],
+        81: ["Rain showers", "🌧️"],
+        82: ["Heavy showers", "⛈️"],
+        85: ["Snow showers", "🌨️"],
+        86: ["Heavy snow showers", "❄️"],
+        95: ["Thunderstorm", "⛈️"],
+        96: ["Thunderstorm with hail", "⛈️"],
+        99: ["Thunderstorm with hail", "⛈️"]
+    };
+
+    function info(code) {
+        return WEATHER[code] || ["Unknown", "🌡️"];
+    }
+
+    // "2026-11-13T17:30" -> "5:30 PM"
+    function to12Hour(isoString) {
+        const timePart = isoString.split("T")[1];
+        let [h, m] = timePart.split(":").map(Number);
+        const ampm = h >= 12 ? "PM" : "AM";
+        h = h % 12 || 12;
+        return h + ":" + String(m).padStart(2, "0") + " " + ampm;
+    }
+
+    // Hero text animation dobara chalane ke liye
+    function replayAnimation() {
+        const items = document.querySelectorAll(
+            ".hero-content .small-heading, #cityName, #dateText, .temp-row, #condition"
+        );
+        items.forEach(function (el, i) {
+            el.classList.remove("anim-in");
+            void el.offsetWidth;
+            el.style.animationDelay = (i * 0.12) + "s";
+            el.classList.add("anim-in");
+        });
+    }
+
+    // Temperature ka count-up
+    function countUp(el, target) {
+        const duration = 900;
+        const startTime = performance.now();
+
+        function step(now) {
+            const p = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = Math.round(target * eased) + "°";
+            if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    // Scroll par sections dheere se dikhenge
+    const revealEls = document.querySelectorAll(
+        ".section-heading, .forecast-container, .city-container, .about-content"
+    );
+    revealEls.forEach(function (el) { el.classList.add("reveal"); });
+
+    const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.15 });
+
+    revealEls.forEach(function (el) { observer.observe(el); });
+
+    async function getWeather(city) {
+        const errorMsg = document.getElementById("errorMsg");
+        errorMsg.textContent = "";
+
+        try {
+            // 1. City name se latitude / longitude
+            const geoRes = await fetch(
+                "https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&name=" +
+                encodeURIComponent(city)
+            );
+            const geo = await geoRes.json();
+
+            if (!geo.results || geo.results.length === 0) {
+                errorMsg.textContent = "City not found. Please try another name.";
+                return;
+            }
+
+            const place = geo.results[0];
+
+            // 2. Weather data
+            const url =
+                "https://api.open-meteo.com/v1/forecast" +
+                "?latitude=" + place.latitude +
+                "&longitude=" + place.longitude +
+                "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code" +
+                "&daily=weather_code,temperature_2m_max,temperature_2m_min,sunset" +
+                "&forecast_days=6&timezone=auto";
+
+            const wRes = await fetch(url);
+            const data = await wRes.json();
+            const c = data.current;
+            const d = data.daily;
+
+            // 3. Aaj ka weather
+            const [text, icon] = info(c.weather_code);
+            const localDate = new Date(c.time);
+
+            document.getElementById("cityName").textContent =
+                place.name + (place.country ? ", " + place.country : "");
+            document.getElementById("dateText").textContent =
+                localDate.toLocaleDateString("en-GB", {
+                    weekday: "long", day: "numeric", month: "long"
+                });
+            document.getElementById("bigIcon").textContent = icon;
+            countUp(document.getElementById("bigTemp"), Math.round(c.temperature_2m));
+            document.getElementById("condition").textContent = text;
+            document.getElementById("feels").textContent =
+                Math.round(c.apparent_temperature) + "°C";
+            document.getElementById("humidity").textContent =
+                c.relative_humidity_2m + "%";
+            document.getElementById("wind").textContent =
+                Math.round(c.wind_speed_10m) + " km/h";
+            document.getElementById("sunset").textContent = to12Hour(d.sunset[0]);
+
+            replayAnimation();
+
+            // 4. Agle 5 din ka forecast
+            const box = document.getElementById("forecastContainer");
+            box.innerHTML = "";
+
+            for (let i = 1; i <= 5; i++) {
+                const [dayText, dayIcon] = info(d.weather_code[i]);
+                const dayName = new Date(d.time[i] + "T00:00:00")
+                    .toLocaleDateString("en-GB", { weekday: "short" });
+
+                box.innerHTML +=
+                    '<div class="day-card">' +
+                        "<h3>" + dayName + "</h3>" +
+                        '<span class="day-icon">' + dayIcon + "</span>" +
+                        "<p>" + dayText + "</p>" +
+                        "<h4>" + Math.round(d.temperature_2m_max[i]) + "° / " +
+                                 Math.round(d.temperature_2m_min[i]) + "°</h4>" +
+                    "</div>";
+            }
+
+        } catch (err) {
+            console.error(err);
+            errorMsg.textContent = "Something went wrong. Check your internet connection.";
+        }
+    }
+
+    // Search button / Enter dabane par
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        const city = document.getElementById("cityInput").value.trim();
+        if (city) getWeather(city);
+    });
+
+    // Page khulte hi New Delhi ka live weather
+    getWeather("New Delhi");
+</script>
+
